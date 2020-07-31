@@ -61,11 +61,11 @@ def main():
     }
 
     nr = InitNornir()
-    nhrp_result = nr.run(task=nhrpconf,name="PUSHING NHRP VIA RESTCONF",chained_url=nhrp_url,headers=headers,)
     crypto_result = nr.run(task=cryptoconf,name="PUSHING CRYPTOGRAPHY VIA RESTCONF",chained_url=crypto_url,headers=headers,)
+    nhrp_result = nr.run(task=nhrpconf,name="PUSHING NHRP VIA RESTCONF",chained_url=nhrp_url,headers=headers,)
     eigrp_result = nr.run(task=eigrpconf,name="PUSHING EIGRP VIA RESTCONF",chained_url=eigrp_url,headers=headers,)
-    print_result(nhrp_result)
     print_result(crypto_result)
+    print_result(nhrp_result)
     print_result(eigrp_result)
 
 if __name__ == "__main__":
