@@ -1,0 +1,26 @@
+---
+
+cisco_group:
+  platform: 'ios'
+  data:
+    banner_configure:
+      banner:
+        motd:
+          banner: "& IOS GROUP RESTCONF BANNER &"
+
+    snmp_configure:
+      snmp-server:
+        Cisco-IOS-XE-snmp:chassis-id: IPvZero-Group
+        Cisco-IOS-XE-snmp:community:
+        - name: JOHN-Group
+        Cisco-IOS-XE-snmp:contact: IPvZero@cbtnuggets.com
+        Cisco-IOS-XE-snmp:enable:
+          enable-choice:
+            traps: {}
+        Cisco-IOS-XE-snmp:host:
+        - ip-address: 8.8.8.8
+          community-or-user: IPvZero-Group
+          version: 2c
+        - ip-address: 88.88.88.88
+          community-or-user: John-Group
+          version: 2c
