@@ -1,0 +1,443 @@
+HUB:
+  hostname: 192.168.31.102
+  groups:
+    - cisco_group
+  data:
+    int_configure:
+      interface:
+        GigabitEthernet:
+        - name: '1'
+          vrf:
+            forwarding: MGMT
+          ip:
+            address:
+              primary:
+                address: 192.168.31.102
+                mask: 255.255.255.0
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '2'
+          ip:
+            address:
+              primary:
+                address: 202.0.0.1
+                mask: 255.255.255.252
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '3'
+          shutdown:
+          -
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '4'
+          shutdown:
+          -
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '5'
+          shutdown:
+          -
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '6'
+          shutdown:
+          -
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        Tunnel:
+        - name: 0
+          ip:
+            address:
+              primary:
+                address: 172.16.1.1
+                mask: 255.255.255.0
+            redirects: false
+            Cisco-IOS-XE-nhrp:nhrp:
+              network-id: 5
+          Cisco-IOS-XE-tunnel:tunnel:
+            source: GigabitEthernet2
+            mode:
+              gre:
+                multipoint: {}
+            protection:
+              Cisco-IOS-XE-crypto:ipsec:
+                profile: IPvZero
+
+    crypto_configure:
+      crypto:
+        Cisco-IOS-XE-crypto:ipsec:
+          profile:
+          - name: IPvZero
+            set:
+              transform-set:
+              - JOHN
+        Cisco-IOS-XE-crypto:isakmp:
+          key:
+            key-address:
+              key: CBTNUGGETS
+              addr4-container:
+                address: 0.0.0.0
+          policy:
+          - number: 1
+            authentication: pre-share
+            group: '14'
+        Cisco-IOS-XE-crypto:pki:
+          certificate:
+            chain:
+            - name: SLA-TrustPoint
+              certificate:
+              - serial: '01'
+                certtype: ca
+            - name: TP-self-signed-191252491
+              certificate:
+              - serial: '01'
+                certtype: self-signed
+          trustpoint:
+          - id: SLA-TrustPoint
+            enrollment:
+              pkcs12:
+              -
+            revocation-check:
+            - crl
+          - id: TP-self-signed-191252491
+            enrollment:
+              selfsigned:
+              -
+            revocation-check:
+            - none
+            subject-name: cn=IOS-Self-Signed-Certificate-191252491
+
+    router_configure:
+      router:
+        Cisco-IOS-XE-eigrp:eigrp:
+        - id: IPvZero
+          address-family:
+          - type: ipv4
+            af-ip-list:
+            - unicast-multicast: unicast
+              autonomous-system: 55
+              network:
+              - number: 172.16.1.0
+                wild-card: 0.0.0.255
+              topology:
+                base: {}
+
+
+
+SPOKE1:
+  hostname: 192.168.31.103
+  groups:
+    - cisco_group
+  data:
+    int_configure:
+      interface:
+        GigabitEthernet:
+        - name: '1'
+          vrf:
+            forwarding: MGMT
+          ip:
+            address:
+              primary:
+                address: 192.168.31.103
+                mask: 255.255.255.0
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '2'
+          ip:
+            address:
+              primary:
+                address: 203.0.0.1
+                mask: 255.255.255.252
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '3'
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '4'
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '5'
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '6'
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        Tunnel:
+        - name: 0
+          ip:
+            address:
+              primary:
+                address: 172.16.1.2
+                mask: 255.255.255.0
+            redirects: false
+            Cisco-IOS-XE-nhrp:nhrp:
+              map:
+                dest-ipv4:
+                - dest-ipv4: 172.16.1.1
+                  nbma-ipv4:
+                  - nbma-ipv4: 202.0.0.1
+                multicast:
+                  nbma_ipv4:
+                  - 202.0.0.1
+              network-id: 5
+              nhs:
+                ipv4:
+                - ipv4: 172.16.1.1
+          Cisco-IOS-XE-tunnel:tunnel:
+            source: GigabitEthernet2
+            mode:
+              gre:
+                multipoint: {}
+            protection:
+              Cisco-IOS-XE-crypto:ipsec:
+                profile: IPvZero
+
+    crypto_configure:
+      crypto:
+        Cisco-IOS-XE-crypto:ipsec:
+          profile:
+          - name: IPvZero
+            set:
+              transform-set:
+              - JOHN
+        Cisco-IOS-XE-crypto:isakmp:
+          key:
+            key-address:
+              key: CBTNUGGETS
+              addr4-container:
+                address: 0.0.0.0
+          policy:
+          - number: 1
+            authentication: pre-share
+            group: '14'
+        Cisco-IOS-XE-crypto:pki:
+          certificate:
+            chain:
+            - name: SLA-TrustPoint
+              certificate:
+              - serial: '01'
+                certtype: ca
+            - name: TP-self-signed-473127409
+              certificate:
+              - serial: '01'
+                certtype: self-signed
+          trustpoint:
+          - id: SLA-TrustPoint
+            enrollment:
+              pkcs12:
+              -
+            revocation-check:
+            - crl
+          - id: TP-self-signed-473127409
+            enrollment:
+              selfsigned:
+              -
+            revocation-check:
+            - none
+            subject-name: cn=IOS-Self-Signed-Certificate-473127409
+
+    router_configure:
+      router:
+        Cisco-IOS-XE-eigrp:eigrp:
+        - id: IPvZero
+          address-family:
+          - type: ipv4
+            af-ip-list:
+            - unicast-multicast: unicast
+              autonomous-system: 55
+              eigrp:
+                stub:
+                  connected:
+                  -
+              network:
+              - number: 10.3.3.0
+                wild-card: 0.0.0.255
+              - number: 172.16.1.0
+                wild-card: 0.0.0.255
+
+
+SPOKE2:
+  hostname: 192.168.31.104
+  groups:
+    - cisco_group
+  data:
+    int_configure:
+      interface:
+        GigabitEthernet:
+        - name: '1'
+          vrf:
+            forwarding: MGMT
+          ip:
+            address:
+              primary:
+                address: 192.168.31.104
+                mask: 255.255.255.0
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '2'
+          ip:
+            address:
+              primary:
+                address: 204.0.0.1
+                mask: 255.255.255.252
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '3'
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '4'
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '5'
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        - name: '6'
+          mop:
+            enabled: false
+            sysid: false
+          Cisco-IOS-XE-ethernet:negotiation:
+            auto: true
+        Tunnel:
+        - name: 0
+          ip:
+            address:
+              primary:
+                address: 172.16.1.3
+                mask: 255.255.255.0
+            redirects: false
+            Cisco-IOS-XE-nhrp:nhrp:
+              map:
+                dest-ipv4:
+                - dest-ipv4: 172.16.1.1
+                  nbma-ipv4:
+                  - nbma-ipv4: 202.0.0.1
+                multicast:
+                  nbma_ipv4:
+                  - 202.0.0.1
+              network-id: 5
+              nhs:
+                ipv4:
+                - ipv4: 172.16.1.1
+          Cisco-IOS-XE-tunnel:tunnel:
+            source: GigabitEthernet2
+            mode:
+              gre:
+                multipoint: {}
+            protection:
+              Cisco-IOS-XE-crypto:ipsec:
+                profile: IPvZero
+
+    crypto_configure:
+      crypto:
+        Cisco-IOS-XE-crypto:ipsec:
+          profile:
+          - name: IPvZero
+            set:
+              transform-set:
+              - JOHN
+        Cisco-IOS-XE-crypto:isakmp:
+          key:
+            key-address:
+              key: CBTNUGGETS
+              addr4-container:
+                address: 0.0.0.0
+          policy:
+          - number: 1
+            authentication: pre-share
+            group: '14'
+        Cisco-IOS-XE-crypto:pki:
+          certificate:
+            chain:
+            - name: SLA-TrustPoint
+              certificate:
+              - serial: '01'
+                certtype: ca
+            - name: TP-self-signed-1544462013
+              certificate:
+              - serial: '01'
+                certtype: self-signed
+          trustpoint:
+          - id: SLA-TrustPoint
+            enrollment:
+              pkcs12:
+              -
+            revocation-check:
+            - crl
+          - id: TP-self-signed-1544462013
+            enrollment:
+              selfsigned:
+              -
+            revocation-check:
+            - none
+            subject-name: cn=IOS-Self-Signed-Certificate-1544462013
+
+
+    router_configure:
+      router:
+        Cisco-IOS-XE-eigrp:eigrp:
+        - id: IPvZero
+          address-family:
+          - type: ipv4
+            af-ip-list:
+            - unicast-multicast: unicast
+              autonomous-system: 55
+              eigrp:
+                stub:
+                  connected:
+                  -
+              network:
+              - number: 10.4.4.0
+                wild-card: 0.0.0.255
+              - number: 172.16.1.0
+                wild-card: 0.0.0.255
